@@ -23,7 +23,6 @@ __all__ = [
 _viewer_count = 1
 _codecs_registered = False
 
-
 class ViewerRPC:
     """Viewer remote procedure interface."""
 
@@ -31,6 +30,16 @@ class ViewerRPC:
         self, ui_collapsed=True, rotate=False, ui="pydata-sphinx", data=None
     ):
         """Create a viewer."""
+        global _codecs_registered
+        if not _codecs_registered:
+            from imjoy_rpc import register_default_codecs
+            register_default_codecs()
+
+            from .imjoy import register_itkwasm_imjoy_codecs
+            register_itkwasm_imjoy_codecs()
+
+            _codecs_registered = True
+
         self._init_viewer_kwargs = dict(ui_collapsed=ui_collapsed, rotate=rotate, ui=ui)
         self.init_data = data
         self.img = display(HTML(f'<div />'), display_id=str(uuid.uuid4()))
