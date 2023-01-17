@@ -3,7 +3,7 @@ from itkwidgets.standalone.config import WS_SERVER_URL
 import asyncio
 
 async def start_server(server_url):
-    config = { 'server_url': server_url, 'workspace': 'viewer' }
+    config = { 'server_url': server_url }#, 'workspace': 'viewer' }
     server = await connect_to_server(config)
     print(server)
 

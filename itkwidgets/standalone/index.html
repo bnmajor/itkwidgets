@@ -53,30 +53,35 @@
      }
      async function setupViewerForImJoy(api) {
       const version = itkVtkViewer.version
-    //   const api = await server.register_service({
-    //     name: 'itk-vtk-viewer',
-    //     id: 'itk_viewer',
-    //     config: { visibility: "public" },
-    //     version,
-    //     description: '2D / 3D web image, mesh, and point set viewer using itk-wasm and vtk.js ',
-    //     type: 'rpc-window',
-    //     docs: 'https://kitware.github.io/itk-vtk-viewer/docs/imjoy.html',
-    //     authors: ['Matt McCormick', 'Wei Ouyang'],
-    //     license: '3-Clause BSD License',
-    //     labels: ['visualization', 'itk', 'vtk', 'image', 'mesh', 'geometry', 'point set', '2D', '3D'],
-    //     icon: 'https://kitware.github.io/itk-vtk-viewer/app/favicon-32x32.png',
-    //     cover: ['https://kitware.github.io/itk-vtk-viewer/docs/howToUse.jpg', 'https://kitware.github.io/itk-vtk-viewer/docs/imjoy.png'],
-    //   })
+      const service = await api.register_service({
+        name: 'itk-vtk-viewer-service',
+        id: 'itk_viewer',
+        config: { visibility: "public" },
+        version,
+        description: '2D / 3D web image, mesh, and point set viewer using itk-wasm and vtk.js ',
+        type: 'rpc-window',
+        docs: 'https://kitware.github.io/itk-vtk-viewer/docs/imjoy.html',
+        authors: ['Matt McCormick', 'Wei Ouyang'],
+        license: '3-Clause BSD License',
+        labels: ['visualization', 'itk', 'vtk', 'image', 'mesh', 'geometry', 'point set', '2D', '3D'],
+        icon: 'https://kitware.github.io/itk-vtk-viewer/app/favicon-32x32.png',
+        cover: ['https://kitware.github.io/itk-vtk-viewer/docs/howToUse.jpg', 'https://kitware.github.io/itk-vtk-viewer/docs/imjoy.png'],
+
+      })
       itkVtkViewer.imJoyCodecs.forEach((codec) => {
         api.registerCodec(codec)
       })
-      api.export(itkVtkViewer.imJoyPluginAPI)
+      let plugin = new itkVtkViewer.ImJoyPluginAPI()
+      await api.export(plugin)
+      await plugin.run({ data: {}, config: {} })
+      plugin.viewer.setRotateEnabled(true)
       api.log('itk-vtk-viewer loaded successfully.')
     }
 
-
+    const container = document.querySelector('.content')
     const config = {
-        "server_url": "http://localhost:37480"
+        "name": "itk-vtk-viewer-server",
+        "server_url": "http://localhost:9000",
     }
     setupHypha(config).then(async (server) => {
         console.log('server', server)

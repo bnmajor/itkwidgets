@@ -1,6 +1,7 @@
 from pathlib import Path
 from aiohttp import web
 import socketio
+import argparse
 
 from itkwidgets.standalone.config import WS_PORT
 
@@ -28,53 +29,17 @@ async def chat_message(sid, data):
 def disconnect(sid):
     print('disconnect ', sid)
 
-app.router.add_static('/static', this_dir / 'static')
+# app.router.add_static('/static', this_dir / 'static')
 app.router.add_get('/', index)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--data", type=str, help="path to a data file")
+    parser.add_argument("--image", type=str, help="path to an image file")
+    parser.add_argument("--label-image", type=str, help="path to a label image file")
+    parser.add_argument("--point-sets", type=str, help="path to a point set data file")
+
+    opt = parser.parse_args()
+
     web.run_app(app, port=WS_PORT)
-
-# import os
-# import subprocess
-# import sys
-# import time
-# import uuid
-
-# import requests
-# from requests import RequestException
-
-# WS_PORT = 37480
-# WS_SERVER_URL = f"http://127.0.0.1:{WS_PORT}"
-
-
-# JWT_SECRET = str(uuid.uuid4())
-# os.environ["JWT_SECRET"] = JWT_SECRET
-# test_env = os.environ.copy()
-
-
-# def socketio_server():
-#     """Start server as test fixture and tear down after test."""
-#     with subprocess.Popen(
-#         [sys.executable, "-m", "hypha.server", f"--port={WS_PORT}"],
-#         env=test_env,
-#     ) as proc:
-
-#         timeout = 10
-#         while timeout > 0:
-#             try:
-#                 response = requests.get(f"http://127.0.0.1:{WS_PORT}/health/liveness")
-#                 if response.ok:
-#                     break
-#             except RequestException:
-#                 pass
-#             timeout -= 0.1
-#             time.sleep(0.1)
-#         yield
-#         proc.kill()
-#         proc.terminate()
-
-# from imjoy_rpc import connect_to_server, api
-
-# if __name__ == '__main__':
-#     # socketio_server()
-#     fut = connect_to_server()
